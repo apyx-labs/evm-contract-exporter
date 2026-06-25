@@ -1,0 +1,68 @@
+# Example values for the evm-contract-exporter chart using the public Chainlink
+# ETH/USD price feed on Ethereum mainnet. No project-specific contracts.
+#
+# Usage:
+#   helm template evm-contract-exporter charts/evm-contract-exporter/ \
+#     --values charts/evm-contract-exporter/examples/chainlink-eth-usd.yaml
+
+namespace: monitoring
+replicaCount: 1
+
+image:
+  repository: ghcr.io/apyx-labs/evm-contract-exporter
+  tag: latest
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+rpcUrlSecret:
+  name: evm-contract-exporter-rpc
+  key: ETH_RPC_URL
+
+logLevel: info
+logFormat: json
+
+service:
+  type: ClusterIP
+  port: 9100
+
+metricPrefixHint: "chainlink_eth_usd_"
+
+config:
+  chain:
+    rpc_url: ${ETH_RPC_URL}
+    chain_id: 1
+    block_tag: finalized
+    request_timeout: 15s
+  server:
+    listen_address: "0.0.0.0:9100"
+  scrape:
+    interval: 30s
+    timeout: 25s
+    max_calls_per_batch: 500
+  labels:
+    chain: ethereum
+  contracts:
+    - name: chainlink_eth_usd
+      metric_prefix: chainlink_eth_usd
+      abi_path: /etc/evm-contract-exporter/AggregatorV3.json
+      instances:
+        - address: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419"
+          labels:
+            pair: eth_usd
+      metrics:
+        - function: decimals
+          help: "Number of decimals in the feed's answer."
+        - function: latestRoundData
+          help: "Latest ETH/USD price (scaled to whole USD using 1e8 feed decimals)."
+          outputs:
+            - index: 1
+              name: answer
+              scale: 1e8
+
+abis:
+  AggregatorV3.json: |-
+    [
+      {"type":"function","name":"decimals","inputs":[],"outputs":[{"name":"","type":"uint8"}],"stateMutability":"view"},
+      {"type":"function","name":"latestRoundData","inputs":[],"outputs":[{"name":"roundId","type":"uint80"},{"name":"answer","type":"int256"},{"name":"startedAt","type":"uint256"},{"name":"updatedAt","type":"uint256"},{"name":"answeredInRound","type":"uint80"}],"stateMutability":"view"}
+    ]

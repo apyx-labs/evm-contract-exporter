@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "evm-contract-exporter.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "evm-contract-exporter.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+{{ toYaml .Values.config | indent 4 }}
+  {{- range $filename, $body := .Values.abis }}
+  {{ $filename }}: |
+{{ $body | indent 4 }}
+  {{- end }}

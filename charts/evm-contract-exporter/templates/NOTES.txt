@@ -1,0 +1,16 @@
+evm-contract-exporter v{{ .Chart.AppVersion }} installed in namespace {{ .Release.Namespace }}.
+
+1. Check pod status:
+   kubectl get pods --namespace {{ .Values.namespace }} -l "app.kubernetes.io/name={{ include "evm-contract-exporter.name" . }},app.kubernetes.io/instance={{ .Release.Name }}"
+
+2. View logs:
+   kubectl logs --namespace {{ .Values.namespace }} -l "app.kubernetes.io/name={{ include "evm-contract-exporter.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -f
+
+3. Port-forward and inspect metrics:
+   kubectl port-forward --namespace {{ .Values.namespace }} svc/{{ include "evm-contract-exporter.fullname" . }} {{ .Values.service.port }}:{{ .Values.service.port }}
+   curl -s localhost:{{ .Values.service.port }}/metrics | grep -E '^(evm_exporter_|{{ .Values.metricPrefixHint | default "your_contract_" }})'
+
+4. Verify the exporter is healthy:
+   - evm_exporter_scrape_errors_total{...} should be 0
+   - evm_exporter_last_scrape_success_timestamp_seconds{...} should be recent
+   - evm_exporter_rpc_block_number{...} should match a recent finalized block

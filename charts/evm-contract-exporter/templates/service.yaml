@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "evm-contract-exporter.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "evm-contract-exporter.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+      appProtocol: http
+  selector:
+    {{- include "evm-contract-exporter.selectorLabels" . | nindent 4 }}
