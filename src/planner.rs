@@ -20,9 +20,8 @@ pub struct Entry {
     pub decode: DecodeTarget,
     pub metric_name: String,
     pub gauge: GaugeVec,
-    /// Registered label-key order for this entry's gauge. Used by tests and
-    /// available for diagnostics; the scrape loop addresses gauges by value.
-    #[allow(dead_code)]
+    /// Registered label-key order for this entry's gauge (exposed via
+    /// [`Entry::gauge_label_keys`]); the scrape loop addresses gauges by value.
     pub(crate) label_keys: Vec<String>,
     pub label_values: Vec<String>,
     pub contract_name: String,
@@ -30,8 +29,8 @@ pub struct Entry {
     pub address: Address,
 }
 
-#[cfg(test)]
 impl Entry {
+    /// Returns the registered label-key order for this entry's gauge.
     pub fn gauge_label_keys(&self) -> Vec<String> {
         self.label_keys.clone()
     }
