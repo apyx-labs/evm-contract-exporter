@@ -1,0 +1,5 @@
+/target
+Cargo.lock.orig
+# Internal planning docs — NOT published to the open-source repo.
+/docs/superpowers/
+.DS_Store
