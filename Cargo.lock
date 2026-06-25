@@ -1752,6 +1752,8 @@ name = "evm-contract-exporter"
 version = "0.1.0"
 dependencies = [
  "alloy",
+ "alloy-dyn-abi",
+ "alloy-json-abi",
  "alloy-primitives",
  "anyhow",
  "axum",
@@ -1760,6 +1762,7 @@ dependencies = [
  "prometheus",
  "rust_decimal",
  "serde",
+ "serde_json",
  "serde_yaml_ng",
  "tempfile",
  "thiserror 2.0.18",
