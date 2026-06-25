@@ -1,0 +1,34 @@
+chain:
+  rpc_url: ${ETH_RPC_URL}
+  chain_id: 1
+  block_tag: finalized
+  request_timeout: 15s
+server:
+  listen_address: "0.0.0.0:9100"
+scrape:
+  interval: 30s
+  timeout: 25s
+  max_calls_per_batch: 500
+labels:
+  chain: ethereum
+contracts:
+  - name: chainlink_eth_usd
+    metric_prefix: chainlink_eth_usd
+    abi_inline: |-
+      [
+        {"type":"function","name":"decimals","inputs":[],"outputs":[{"name":"","type":"uint8"}],"stateMutability":"view"},
+        {"type":"function","name":"latestRoundData","inputs":[],"outputs":[{"name":"roundId","type":"uint80"},{"name":"answer","type":"int256"},{"name":"startedAt","type":"uint256"},{"name":"updatedAt","type":"uint256"},{"name":"answeredInRound","type":"uint80"}],"stateMutability":"view"}
+      ]
+    instances:
+      - address: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419"
+        labels:
+          pair: eth_usd
+    metrics:
+      - function: decimals
+        help: "Number of decimals in the feed's answer."
+      - function: latestRoundData
+        help: "Latest ETH/USD price scaled to whole USD."
+        outputs:
+          - index: 1
+            name: answer
+            scale: 1e8
