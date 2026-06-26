@@ -1,5 +1,9 @@
 # Build stage
-FROM rust:1-slim AS builder
+# Pin to bookworm (Debian 12) so the builder's glibc matches the
+# distroless/cc-debian12 runtime below. Plain `rust:1-slim` pulls the latest
+# Debian (trixie, glibc >= 2.38) and produces a binary that fails on the
+# debian12 runtime with `GLIBC_2.38 not found`.
+FROM rust:1-slim-bookworm AS builder
 
 ARG GIT_COMMIT=""
 ENV GIT_COMMIT=${GIT_COMMIT}
