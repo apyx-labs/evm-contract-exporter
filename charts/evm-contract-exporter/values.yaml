@@ -54,6 +54,9 @@ resources:
     memory: 64Mi
 
 podAnnotations: {}
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
 extraEnv: []
 nodeSelector: {}
 tolerations: []
